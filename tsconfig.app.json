@@ -17,8 +17,8 @@
     "jsx": "react-jsx",
 
     /* Linting */
-    "noUnusedLocals": true,
-    "noUnusedParameters": true,
+    "noUnusedLocals": false /* ESLint でチェックするため無効化 */,
+    "noUnusedParameters": false /* ESLint でチェックするため無効化 */,
     "erasableSyntaxOnly": true,
     "noFallthroughCasesInSwitch": true
   },
