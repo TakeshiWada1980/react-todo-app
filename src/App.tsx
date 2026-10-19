@@ -7,17 +7,32 @@ import TodoList from "./TodoList";
 import { v4 as uuid } from "uuid";
 import { twMerge } from "tailwind-merge";
 import dayjs from "dayjs";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faTriangleExclamation } from "@fortawesome/free-solid-svg-icons";
+
+const getTodoNameError = (name: string): string => {
+  const trimmedName = name.trim();
+  if (trimmedName.length < 2 || trimmedName.length > 32) {
+    return "前後の空白を除いて、2文字以上、32文字以内で入力してください";
+  }
+  return "";
+};
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>(initTodos);
   const [newTodoName, setNewTodoName] = useState("");
   const [newTodoPriority, setNewTodoPriority] = useState(3);
   const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
+  const [isNameTouched, setIsNameTouched] = useState(false);
 
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
+  const newTodoNameError = getTodoNameError(newTodoName);
+  const isNewTodoNameInvalid = newTodoNameError !== "";
+  const showNewTodoNameError = isNameTouched && isNewTodoNameInvalid;
 
   const updateNewTodoName = (e: ChangeEvent<HTMLInputElement>) => {
     setNewTodoName(e.target.value);
+    setIsNameTouched(true);
   };
 
   const updateNewTodoPriority = (e: ChangeEvent<HTMLInputElement>) => {
@@ -30,9 +45,14 @@ const App = () => {
   };
 
   const addNewTodo = () => {
+    if (isNewTodoNameInvalid) {
+      setIsNameTouched(true);
+      return;
+    }
+
     const newTodo: Todo = {
       id: uuid(),
-      name: newTodoName,
+      name: newTodoName.trim(),
       isDone: false,
       priority: newTodoPriority,
       deadline: newTodoDeadline,
@@ -41,6 +61,7 @@ const App = () => {
     setNewTodoName("");
     setNewTodoPriority(3);
     setNewTodoDeadline(null);
+    setIsNameTouched(false);
   };
 
   return (
@@ -54,24 +75,54 @@ const App = () => {
       </div>
       <TodoList todos={todos} />
 
-      <div className="mt-4 space-y-2 rounded-md border border-slate-300 bg-white p-3 drop-shadow">
+      <form
+        onSubmit={(e) => {
+          e.preventDefault();
+          addNewTodo();
+        }}
+        aria-labelledby="newTodoHeading"
+        className="mt-4 space-y-2 rounded-md border border-slate-300 bg-white p-3 drop-shadow"
+      >
         <h2 id="newTodoHeading" className="text-lg font-bold">
           新しいタスクの追加
         </h2>
 
-        <div className="flex items-center space-x-2">
-          <label className="font-bold" htmlFor="newTodoName">
-            名前
-          </label>
-          <input
-            id="newTodoName"
-            name="todoName"
-            type="text"
-            value={newTodoName}
-            onChange={updateNewTodoName}
-            className="min-w-0 grow rounded-md border border-gray-300 p-2"
-            placeholder="タスクの名前を入力してください"
-          />
+        <div>
+          <div className="flex items-center space-x-2">
+            <label className="font-bold" htmlFor="newTodoName">
+              名前
+            </label>
+            <input
+              id="newTodoName"
+              name="todoName"
+              type="text"
+              required
+              value={newTodoName}
+              onChange={updateNewTodoName}
+              aria-invalid={showNewTodoNameError}
+              aria-describedby={
+                showNewTodoNameError ? "newTodoNameError" : undefined
+              }
+              className={twMerge(
+                "min-w-0 grow rounded-md border border-gray-300 p-2",
+                showNewTodoNameError && "border-red-500 outline-red-500",
+              )}
+              placeholder="2文字以上、32文字以内で入力してください"
+            />
+          </div>
+          {showNewTodoNameError && (
+            <div
+              id="newTodoNameError"
+              aria-live="polite"
+              className="ml-10 flex items-center space-x-1 text-sm font-medium text-red-500"
+            >
+              <FontAwesomeIcon
+                icon={faTriangleExclamation}
+                className="mr-0.5"
+              />
+              <div>{newTodoNameError}</div>
+            </div>
+          )}
         </div>
 
         <fieldset>
@@ -112,16 +163,17 @@ const App = () => {
         </div>
 
         <button
-          type="button"
-          onClick={addNewTodo}
+          type="submit"
+          disabled={isNewTodoNameInvalid}
           className={twMerge(
             "cursor-pointer rounded-md px-3 py-1",
             "bg-indigo-500 font-bold text-white hover:bg-indigo-600",
+            "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-indigo-500",
           )}
         >
           追加
         </button>
-      </div>
+      </form>
     </div>
   );
 };
