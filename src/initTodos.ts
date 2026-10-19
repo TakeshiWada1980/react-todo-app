@@ -23,4 +23,11 @@ export const initTodos: Todo[] = [
     priority: 1,
     deadline: new Date(2026, 10, 11),
   },
+  {
+    id: uuid(),
+    name: "図書の返却",
+    isDone: true,
+    priority: 2,
+    deadline: null,
+  },
 ];

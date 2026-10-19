@@ -1,5 +1,3 @@
-import React from "react";
-
 type Props = {
   name: string;
   uncompletedCount: number; // 追加
