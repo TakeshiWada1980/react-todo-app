@@ -6,11 +6,13 @@ import WelcomeMessage from "./WelcomeMessage";
 import TodoList from "./TodoList";
 import { v4 as uuid } from "uuid";
 import { twMerge } from "tailwind-merge";
+import dayjs from "dayjs";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>(initTodos);
   const [newTodoName, setNewTodoName] = useState("");
   const [newTodoPriority, setNewTodoPriority] = useState(3);
+  const [newTodoDeadline, setNewTodoDeadline] = useState<Date | null>(null);
 
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
 
@@ -22,17 +24,23 @@ const App = () => {
     setNewTodoPriority(Number(e.target.value));
   };
 
+  const updateDeadline = (e: ChangeEvent<HTMLInputElement>) => {
+    const dt = e.target.value;
+    setNewTodoDeadline(dt === "" ? null : new Date(dt));
+  };
+
   const addNewTodo = () => {
     const newTodo: Todo = {
       id: uuid(),
       name: newTodoName,
       isDone: false,
       priority: newTodoPriority,
-      deadline: new Date(2026, 10, 13),
+      deadline: newTodoDeadline,
     };
     setTodos((currentTodos) => [...currentTodos, newTodo]);
     setNewTodoName("");
     setNewTodoPriority(3);
+    setNewTodoDeadline(null);
   };
 
   return (
@@ -84,6 +92,24 @@ const App = () => {
             ))}
           </div>
         </fieldset>
+
+        <div className="flex flex-wrap items-center gap-2">
+          <label className="font-bold" htmlFor="deadline">
+            期限
+          </label>
+          <input
+            type="datetime-local"
+            id="deadline"
+            name="deadline"
+            value={
+              newTodoDeadline
+                ? dayjs(newTodoDeadline).format("YYYY-MM-DDTHH:mm:ss")
+                : ""
+            }
+            onChange={updateDeadline}
+            className="max-w-full min-w-0 rounded-md border border-gray-300 px-2 py-0.5"
+          />
+        </div>
 
         <button
           type="button"
