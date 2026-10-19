@@ -10,6 +10,7 @@ import { twMerge } from "tailwind-merge";
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>(initTodos);
   const [newTodoName, setNewTodoName] = useState("");
+  const [newTodoPriority, setNewTodoPriority] = useState(3);
 
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
 
@@ -17,16 +18,21 @@ const App = () => {
     setNewTodoName(e.target.value);
   };
 
+  const updateNewTodoPriority = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewTodoPriority(Number(e.target.value));
+  };
+
   const addNewTodo = () => {
     const newTodo: Todo = {
       id: uuid(),
       name: newTodoName,
       isDone: false,
-      priority: 3,
+      priority: newTodoPriority,
       deadline: new Date(2026, 10, 13),
     };
     setTodos((currentTodos) => [...currentTodos, newTodo]);
     setNewTodoName("");
+    setNewTodoPriority(3);
   };
 
   return (
@@ -59,6 +65,25 @@ const App = () => {
             placeholder="タスクの名前を入力してください"
           />
         </div>
+
+        <fieldset>
+          <legend className="mb-1 font-bold">優先度</legend>
+          <div className="flex gap-5">
+            {[1, 2, 3].map((value) => (
+              <label key={value} className="flex items-center space-x-1">
+                <input
+                  id={`priority-${value}`}
+                  name="priorityGroup"
+                  type="radio"
+                  value={value}
+                  checked={newTodoPriority === value}
+                  onChange={updateNewTodoPriority}
+                />
+                <span>{value}</span>
+              </label>
+            ))}
+          </div>
+        </fieldset>
 
         <button
           type="button"
