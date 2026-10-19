@@ -26,6 +26,7 @@ const App = () => {
   const [isNameTouched, setIsNameTouched] = useState(false);
 
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
+  const completedCount = todos.length - uncompletedCount;
   const newTodoNameError = getTodoNameError(newTodoName);
   const isNewTodoNameInvalid = newTodoNameError !== "";
   const showNewTodoNameError = isNameTouched && isNewTodoNameInvalid;
@@ -76,6 +77,10 @@ const App = () => {
     );
   };
 
+  const removeCompletedTodos = () => {
+    setTodos((currentTodos) => currentTodos.filter((todo) => !todo.isDone));
+  };
+
   return (
     <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
       <h1 className="mb-4 text-2xl font-bold">TodoApp</h1>
@@ -86,6 +91,19 @@ const App = () => {
         />
       </div>
       <TodoList todos={todos} updateIsDone={updateIsDone} />
+
+      <button
+        type="button"
+        onClick={removeCompletedTodos}
+        disabled={completedCount === 0}
+        className={twMerge(
+          "mt-4 cursor-pointer rounded-md px-3 py-1 font-medium",
+          "bg-rose-500 text-white hover:bg-rose-600",
+          "disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-rose-500",
+        )}
+      >
+        完了済みのタスクを削除
+      </button>
 
       <form
         onSubmit={(e) => {
