@@ -1,4 +1,5 @@
 import { useState } from "react";
+import type { ChangeEvent } from "react";
 import type { Todo } from "./types";
 import { initTodos } from "./initTodos";
 import WelcomeMessage from "./WelcomeMessage";
@@ -8,18 +9,24 @@ import { twMerge } from "tailwind-merge";
 
 const App = () => {
   const [todos, setTodos] = useState<Todo[]>(initTodos);
+  const [newTodoName, setNewTodoName] = useState("");
 
   const uncompletedCount = todos.filter((todo) => !todo.isDone).length;
+
+  const updateNewTodoName = (e: ChangeEvent<HTMLInputElement>) => {
+    setNewTodoName(e.target.value);
+  };
 
   const addNewTodo = () => {
     const newTodo: Todo = {
       id: uuid(),
-      name: "新しいタスク",
+      name: newTodoName,
       isDone: false,
       priority: 3,
       deadline: new Date(2026, 10, 13),
     };
     setTodos((currentTodos) => [...currentTodos, newTodo]);
+    setNewTodoName("");
   };
 
   return (
@@ -37,6 +44,21 @@ const App = () => {
         <h2 id="newTodoHeading" className="text-lg font-bold">
           新しいタスクの追加
         </h2>
+
+        <div className="flex items-center space-x-2">
+          <label className="font-bold" htmlFor="newTodoName">
+            名前
+          </label>
+          <input
+            id="newTodoName"
+            name="todoName"
+            type="text"
+            value={newTodoName}
+            onChange={updateNewTodoName}
+            className="min-w-0 grow rounded-md border border-gray-300 p-2"
+            placeholder="タスクの名前を入力してください"
+          />
+        </div>
 
         <button
           type="button"
