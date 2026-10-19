@@ -7,6 +7,7 @@ import { twMerge } from "tailwind-merge";
 type Props = {
   todos: Todo[];
   updateIsDone: (id: string, value: boolean) => void;
+  remove: (id: string) => void;
 };
 
 const num2star = (n: number): string => "★".repeat(4 - n);
@@ -75,6 +76,17 @@ const TodoList = (props: Props) => {
               </span>
             )}
           </div>
+          <button
+            type="button"
+            onClick={() => props.remove(todo.id)}
+            aria-label={`${todo.name}を削除`}
+            className={twMerge(
+              "shrink-0 cursor-pointer rounded-md px-2 py-1 text-sm font-bold",
+              "bg-rose-300 text-white hover:bg-rose-500",
+            )}
+          >
+            削除
+          </button>
         </div>
       ))}
     </div>

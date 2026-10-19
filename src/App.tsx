@@ -81,6 +81,10 @@ const App = () => {
     setTodos((currentTodos) => currentTodos.filter((todo) => !todo.isDone));
   };
 
+  const remove = (id: string) => {
+    setTodos((currentTodos) => currentTodos.filter((todo) => todo.id !== id));
+  };
+
   return (
     <div className="mx-4 mt-10 max-w-2xl md:mx-auto">
       <h1 className="mb-4 text-2xl font-bold">TodoApp</h1>
@@ -90,7 +94,7 @@ const App = () => {
           uncompletedCount={uncompletedCount}
         />
       </div>
-      <TodoList todos={todos} updateIsDone={updateIsDone} />
+      <TodoList todos={todos} updateIsDone={updateIsDone} remove={remove} />
 
       <button
         type="button"
